@@ -26,7 +26,7 @@ def take_screenshot(username: str, password: str):
         page.fill("input#email", username)
         page.fill("input#password", password)
         page.click('button[type="submit"]')
-        page.wait_for_selector("section.offers-section")
+        page.wait_for_load_state("networkidle");
 
         # remove uneeded elements
         page.evaluate(
