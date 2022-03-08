@@ -18,7 +18,7 @@ PASSWORD: str = getenv("E_PASSWORD", "")
 
 def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=False)
+        browser = p.firefox.launch()
         page = browser.new_page(viewport={"width": 750, "height": 800})
 
         # Login
