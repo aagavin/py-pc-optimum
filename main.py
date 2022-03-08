@@ -30,13 +30,13 @@ def take_screenshot(username: str, password: str):
 
         # remove uneeded elements
         page.evaluate(
-        """
-        () => {
-          document.querySelector('footer.site-footer').remove();
-          document.querySelector('section.checklist-container').remove()
-          document.querySelector('nav.menu').remove()
-        }
-        """
+            """
+            () => {
+              document.querySelector('footer.site-footer')?.remove();
+              document.querySelector('section.checklist-container')?.remove()
+              document.querySelector('nav.menu')?.remove()
+            }
+            """
         )
         page.screenshot(full_page=True, path=SCREENSHOT_PATH, quality=100, type="jpeg")
         browser.close()
