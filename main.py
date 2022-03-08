@@ -9,7 +9,7 @@ from pathlib import Path
 import img2pdf
 from playwright.sync_api import sync_playwright
 
-SCREENSHOT_PATH = "shoot.jpg"
+SCREENSHOT_PATH = "shoot.png"
 SMTP_SERVER: str = getenv("SMTP_SERVER", "")
 PORT: int = int(getenv("SMTP_PORT", 0))  # For starttls
 SENDER_EMAIL: str = getenv("E_USERNAME", "")
@@ -18,14 +18,16 @@ PASSWORD: str = getenv("E_PASSWORD", "")
 
 def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
-        browser = p.firefox.launch()
+        browser = p.firefox.launch(headless=False)
         page = browser.new_page(viewport={"width": 750, "height": 800})
 
         # Login
         page.goto("https://www.pcoptimum.ca/login")
         page.fill("input#email", username)
         page.fill("input#password", password)
-        page.click('button[type="submit"]')
+
+        with page.expect_navigation():
+            page.click('button[type="submit"]')
         page.wait_for_load_state("networkidle")
 
         # remove uneeded elements
@@ -38,7 +40,7 @@ def take_screenshot(username: str, password: str):
             }
             """
         )
-        page.screenshot(full_page=True, path=SCREENSHOT_PATH, quality=100, type="jpeg")
+        page.screenshot(full_page=True, path=SCREENSHOT_PATH, type="png")
         browser.close()
 
 
