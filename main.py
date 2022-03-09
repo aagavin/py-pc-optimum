@@ -9,7 +9,7 @@ from pathlib import Path
 import img2pdf
 from playwright.sync_api import sync_playwright
 
-SCREENSHOT_PATH = "shoot.png"
+SCREENSHOT_PATH = "shoot.jpg"
 SMTP_SERVER: str = getenv("SMTP_SERVER", "")
 PORT: int = int(getenv("SMTP_PORT", 0))  # For starttls
 SENDER_EMAIL: str = getenv("E_USERNAME", "")
@@ -40,7 +40,7 @@ def take_screenshot(username: str, password: str):
             }
             """
         )
-        page.screenshot(full_page=True, path=SCREENSHOT_PATH, type="png")
+        page.screenshot(full_page=True, path=SCREENSHOT_PATH, type="jpeg", quality=100)
         browser.close()
 
 
