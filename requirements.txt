@@ -10,6 +10,7 @@ pikepdf==5.0.1
 Pillow==9.0.1
 platformdirs==2.5.1
 playwright==1.19.0
+playwright-stealth==1.0.5
 pyee==8.1.0
 pyparsing==3.0.7
 tomli==2.0.1
