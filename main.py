@@ -8,6 +8,8 @@ from pathlib import Path
 
 import img2pdf
 from playwright.sync_api import sync_playwright
+from playwright._impl._api_types import TimeoutError as PlayTimeoutError
+from playwright_stealth import stealth_sync
 
 SCREENSHOT_PATH = "shoot.jpg"
 SMTP_SERVER: str = getenv("SMTP_SERVER", "")
@@ -19,27 +21,36 @@ PASSWORD: str = getenv("E_PASSWORD", "")
 def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
         browser = p.firefox.launch()
-        page = browser.new_page(viewport={"width": 750, "height": 800})
+        page = browser.new_page()
+        stealth_sync(page)
 
         # Login
         page.goto("https://www.pcoptimum.ca/login")
         page.fill("input#email", username)
         page.fill("input#password", password)
 
-        with page.expect_navigation():
+        with page.expect_navigation(url="https://www.pcoptimum.ca**"):
             page.click('button[type="submit"]')
-        page.wait_for_load_state("networkidle")
+        try:
+            page.wait_for_selector("section.offers-section", timeout=1000)
+        except PlayTimeoutError:
+            page.locator("text=close").click()
+            page.locator("text=Skip the tour").click()
+        
+
+        page.wait_for_selector('#end-navigation')
+        page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
+        page.wait_for_selector("section.offers-section")
 
         # remove uneeded elements
         page.evaluate(
-            """
-            () => {
-              document.querySelector('footer.site-footer')?.remove();
-              document.querySelector('section.checklist-container')?.remove()
-              document.querySelector('nav.menu')?.remove()
-            }
-            """
-        )
+        """
+        () => {
+          document.querySelector('footer.site-footer')?.remove();
+          document.querySelector('section.checklist-container')?.remove()
+          document.querySelector('nav.menu')?.remove()
+        }
+        """)
         page.screenshot(full_page=True, path=SCREENSHOT_PATH, type="jpeg", quality=100)
         browser.close()
 
