@@ -31,13 +31,7 @@ def take_screenshot(username: str, password: str):
 
         with page.expect_navigation(url="https://www.pcoptimum.ca**"):
             page.click('button[type="submit"]')
-        try:
-            page.wait_for_selector("section.offers-section", timeout=1000)
-        except PlayTimeoutError:
-            page.locator("text=close").click()
-            page.locator("text=Skip the tour").click()
         
-
         page.wait_for_selector('#end-navigation')
         page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
         page.wait_for_selector("section.offers-section")
@@ -51,7 +45,10 @@ def take_screenshot(username: str, password: str):
           document.querySelector('nav.menu')?.remove()
         }
         """)
-        page.screenshot(full_page=True, path=SCREENSHOT_PATH, type="jpeg", quality=100)
+        
+        # set inner text of header
+        page.locator("section.offers-section:nth-child(1) > header:nth-child(1) > h1:nth-child(1)").evaluate(f"n => n.innerText = 'PC Points for {username}';")
+        page.locator("div.container").screenshot(path=SCREENSHOT_PATH, type="jpeg", quality=100)
         browser.close()
 
 
