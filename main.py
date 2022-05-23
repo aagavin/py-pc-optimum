@@ -15,6 +15,7 @@ SCREENSHOT_PATH = "shoot.jpg"
 SMTP_SERVER: str = getenv("SMTP_SERVER", "")
 PORT: int = int(getenv("SMTP_PORT", 0))  # For starttls
 SENDER_EMAIL: str = getenv("E_USERNAME", "")
+TO_EMAIL: str = getenv("E_TO", "")
 PASSWORD: str = getenv("E_PASSWORD", "")
 
 
@@ -57,7 +58,7 @@ def send_email():
     message = MIMEMultipart("alternative")
     message["Subject"] = text
     message["From"] = SENDER_EMAIL
-    message["To"] = SENDER_EMAIL
+    message["To"] = TO_EMAIL
     with open(SCREENSHOT_PATH, "rb") as attachment:
         attach_part = MIMEApplication(img2pdf.convert(attachment))
         attach_part.add_header(
