@@ -8,4 +8,4 @@ playwright==1.22.0
 playwright-stealth==1.0.5
 pyee==8.1.0
 pyparsing==3.0.9
-websockets==10.1
+websockets==10.3
