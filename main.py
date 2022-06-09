@@ -1,4 +1,4 @@
-import argparse
+import json
 import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 from playwright._impl._api_types import TimeoutError as PlayTimeoutError
 from playwright_stealth import stealth_sync
 
-SCREENSHOT_PATH = "shoot.jpg"
+SCREENSHOT_PATH = ".jpg"
 SMTP_SERVER: str = getenv("SMTP_SERVER", "")
 PORT: int = int(getenv("SMTP_PORT", 0))  # For starttls
 SENDER_EMAIL: str = getenv("E_USERNAME", "")
@@ -19,7 +19,7 @@ TO_EMAIL: str = getenv("E_TO", "")
 PASSWORD: str = getenv("E_PASSWORD", "")
 
 
-def take_screenshot(username: str, password: str):
+def take_screenshot(username: str, password: str, screen_path: str):
     with sync_playwright() as p:
         browser = p.firefox.launch()
         page = browser.new_page()
@@ -49,28 +49,30 @@ def take_screenshot(username: str, password: str):
         
         # set inner text of header
         page.locator("section.offers-section:nth-child(1) > header:nth-child(1) > h1:nth-child(1)").evaluate(f"n => n.innerText = 'PC Points for {username}';")
-        page.locator("div.container").screenshot(path=SCREENSHOT_PATH, type="jpeg", quality=100)
+        page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
         browser.close()
 
 
-def send_email():
-    text = f"PC POINTS FOR {parser.parse_args().username}"
+def send_email(screenshots: list):
+    text = f"PC POINTS FOR {', '.join([s.replace('_.jpg','') for s in screenshots])}"
     message = MIMEMultipart("alternative")
     message["Subject"] = text
     message["From"] = SENDER_EMAIL
     message["To"] = TO_EMAIL
-    with open(SCREENSHOT_PATH, "rb") as attachment:
-        attach_part = MIMEApplication(img2pdf.convert(attachment))
-        attach_part.add_header(
-            "Content-Disposition",
-            "attachment",
-            filename=SCREENSHOT_PATH.replace(".jpg", ".pdf"),
-        )
+
+    for path in screenshots:
+        with open(path, "rb") as attachment:
+            attach_part = MIMEApplication(img2pdf.convert(attachment))
+            attach_part.add_header(
+                "Content-Disposition",
+                "attachment",
+                filename=path.replace(".jpg", ".pdf"),
+            )
+        message.attach(attach_part)
 
     text_part = MIMEText(text, "plain")
 
     message.attach(text_part)
-    message.attach(attach_part)
 
     with smtplib.SMTP(host=SMTP_SERVER, port=PORT) as server:
         server.starttls()
@@ -78,16 +80,17 @@ def send_email():
         server.sendmail(SENDER_EMAIL, SENDER_EMAIL, message.as_string())
 
 
-def main(username: str, password: str):
-    take_screenshot(username, password)
-    send_email()
+def main():
+    users = json.loads(getenv("USERS", ""))
+    screenshots = []
+    for user in users:
+        screen_path = f"{user['username']}_{SCREENSHOT_PATH}"
+        screenshots.append(screen_path)
+        take_screenshot(user['username'], user['password'], screen_path)
+    
+    send_email(screenshots)
     # remove file
     Path(SCREENSHOT_PATH).unlink(missing_ok=True)
 
 
-# args
-parser = argparse.ArgumentParser()
-parser.add_argument("username")
-parser.add_argument("password")
-args = parser.parse_args()
-main(args.username, args.password)
+main()

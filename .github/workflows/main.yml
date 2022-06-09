@@ -22,6 +22,7 @@ jobs:
 
       - name: install firefox
         run: playwright install firefox
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: run stuff
-        run: E_FROM=${{ secrets.E_FROM }} E_PASSWORD=${{ secrets.E_PASSWORD }} E_TO=${{ secrets.E_TO }} E_USERNAME=${{ secrets.E_USERNAME }} SMTP_SERVER=${{ secrets.SMTP_SERVER }} SMTP_PORT=${{ secrets.SMTP_PORT }} python main.py ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }}
+        run: E_FROM=${{ secrets.E_FROM }} E_PASSWORD=${{ secrets.E_PASSWORD }} E_TO=${{ secrets.E_TO }} E_USERNAME=${{ secrets.E_USERNAME }} SMTP_SERVER=${{ secrets.SMTP_SERVER }} SMTP_PORT=${{ secrets.SMTP_PORT }} USERS=${{ secrets.USERS }} python main.py
