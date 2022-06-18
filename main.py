@@ -21,7 +21,7 @@ PASSWORD: str = getenv("E_PASSWORD", "")
 
 def take_screenshot(username: str, password: str, screen_path: str):
     with sync_playwright() as p:
-        browser = p.firefox.launch()
+        browser = p.firefox.launch(headless=False)
         page = browser.new_page()
         stealth_sync(page)
 
@@ -81,16 +81,27 @@ def send_email(screenshots: list):
 
 
 def main():
-    users = json.loads(getenv("USERS", ""))
-    screenshots = []
-    for user in users:
-        screen_path = f"{user['username']}_{SCREENSHOT_PATH}"
-        screenshots.append(screen_path)
-        take_screenshot(user['username'], user['password'], screen_path)
-    
-    send_email(screenshots)
-    # remove file
-    Path(SCREENSHOT_PATH).unlink(missing_ok=True)
+    try:
+        users = json.loads(getenv("USERS", ""))
+        screenshots = []
+        for user in users:
+            screen_path = f"{user['username']}_{SCREENSHOT_PATH}"
+            screenshots.append(screen_path)
+            take_screenshot(user['username'], user['password'], screen_path)
+        
+        send_email(screenshots)
+        # remove file
+        Path(SCREENSHOT_PATH).unlink(missing_ok=True)
+    except Exception as e:
+        message = MIMEMultipart()
+        message["Subject"] = "Error"
+        message["From"] = SENDER_EMAIL
+        message["To"] = SENDER_EMAIL
+        message.attach(MIMEText(f"Error\n{e=}", "plain"))
+        with smtplib.SMTP(host=SMTP_SERVER, port=PORT) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, PASSWORD)
+            server.sendmail(SENDER_EMAIL, SENDER_EMAIL, message.as_string())
 
 
 main()
