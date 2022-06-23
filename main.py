@@ -21,7 +21,7 @@ PASSWORD: str = getenv("E_PASSWORD", "")
 
 def take_screenshot(username: str, password: str, screen_path: str):
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=False)
+        browser = p.firefox.launch(headless=True)
         page = browser.new_page()
         stealth_sync(page)
 
