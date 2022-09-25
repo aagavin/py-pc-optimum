@@ -48,7 +48,6 @@ def take_screenshot(username: str, password: str, screen_path: str):
         """)
         
         # set inner text of header
-        page.locator("section.offers-section:nth-child(1) > header:nth-child(1) > h1:nth-child(1)").evaluate(f"n => n.innerText = 'PC Points for {username}';")
         page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
         browser.close()
 
@@ -102,6 +101,7 @@ def main():
             server.starttls()
             server.login(SENDER_EMAIL, PASSWORD)
             server.sendmail(SENDER_EMAIL, SENDER_EMAIL, message.as_string())
+        raise e
 
 
 main()
