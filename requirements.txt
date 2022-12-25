@@ -3,6 +3,6 @@ lxml==4.9.1
 packaging==22.0
 pikepdf==6.2.1
 Pillow==9.3.0
-playwright==1.27.1
+playwright==1.29.0
 playwright-stealth==1.0.5
 pyparsing==3.0.9
