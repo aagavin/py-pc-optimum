@@ -1,5 +1,5 @@
 img2pdf==0.4.4
-lxml==4.9.1
+lxml==4.9.2
 packaging==22.0
 pikepdf==6.2.1
 Pillow==9.3.0
