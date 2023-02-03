@@ -35,8 +35,8 @@ def take_screenshot(username: str, password: str, screen_path: str):
         
         page.wait_for_selector('#end-navigation')
         page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
-        page.wait_for_selector("section.offers-section")
-
+        page.wait_for_load_state("networkidle")
+        
         # remove uneeded elements
         page.evaluate(
         """
