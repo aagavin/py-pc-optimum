@@ -19,10 +19,11 @@ TO_EMAIL: str = getenv("E_TO", "")
 PASSWORD: str = getenv("E_PASSWORD", "")
 
 
-def take_screenshot(username: str, password: str, screen_path: str):
+def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
         browser = p.firefox.launch(headless=True)
         page = browser.new_page()
+        page.set_viewport_size({ 'width': 1920, 'height': 1080})
         stealth_sync(page)
 
         # Login
@@ -86,7 +87,7 @@ def main():
         for user in users:
             screen_path = f"{user['username']}_{SCREENSHOT_PATH}"
             screenshots.append(screen_path)
-            take_screenshot(user['username'], user['password'], screen_path)
+            take_screenshot(user['username'], user['password'])
         
         send_email(screenshots)
         # remove file
