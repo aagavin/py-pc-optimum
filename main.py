@@ -26,31 +26,38 @@ def take_screenshot(username: str, password: str):
         page.set_viewport_size({ 'width': 1920, 'height': 1080})
         stealth_sync(page)
 
-        # Login
-        page.goto("https://www.pcoptimum.ca/login")
-        page.fill("input#email", username)
-        page.fill("input#password", password)
+        try:
 
-        with page.expect_navigation(url="https://www.pcoptimum.ca**"):
-            page.click('button[type="submit"]')
+            # Login
+            page.goto("https://www.pcoptimum.ca/login")
+            page.fill("input#email", username)
+            page.fill("input#password", password)
+
+            with page.expect_navigation(url="https://www.pcoptimum.ca**"):
+                page.click('button[type="submit"]')
+            
+            page.wait_for_selector('#end-navigation')
+            page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
+            page.wait_for_load_state("networkidle")
+            
+            # remove uneeded elements
+            page.evaluate(
+            """
+            () => {
+            document.querySelector('footer.site-footer')?.remove();
+            document.querySelector('section.checklist-container')?.remove()
+            document.querySelector('nav.menu')?.remove()
+            }
+            """)
+            
+            # set inner text of header
+            page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
         
-        page.wait_for_selector('#end-navigation')
-        page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
-        page.wait_for_load_state("networkidle")
-        
-        # remove uneeded elements
-        page.evaluate(
-        """
-        () => {
-          document.querySelector('footer.site-footer')?.remove();
-          document.querySelector('section.checklist-container')?.remove()
-          document.querySelector('nav.menu')?.remove()
-        }
-        """)
-        
-        # set inner text of header
-        page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
-        browser.close()
+        except Exception as e:
+            page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
+            raise e
+        finally:
+            browser.close()
 
 
 def send_email(screenshots: list):
