@@ -1,6 +1,6 @@
 img2pdf==0.4.4
 lxml==4.9.3
-packaging==23.1
+packaging==23.2
 pikepdf==8.4.1
 Pillow==10.0.1
 playwright==1.38.0
