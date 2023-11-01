@@ -1,7 +1,7 @@
 img2pdf==0.4.4
 lxml==4.9.3
 packaging==23.2
-pikepdf==8.5.1
+pikepdf==8.6.0
 Pillow==10.1.0
 playwright==1.38.0
 playwright-stealth==1.0.6
