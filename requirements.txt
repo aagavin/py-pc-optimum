@@ -1,4 +1,4 @@
-img2pdf==0.5.0
+img2pdf==0.5.1
 lxml==4.9.3
 packaging==23.2
 pikepdf==8.6.0
