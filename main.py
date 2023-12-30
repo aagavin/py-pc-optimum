@@ -8,7 +8,6 @@ from pathlib import Path
 
 import img2pdf
 from playwright.sync_api import sync_playwright
-from playwright._impl._api_types import TimeoutError as PlayTimeoutError
 from playwright_stealth import stealth_sync
 
 SCREENSHOT_PATH = ".jpg"
