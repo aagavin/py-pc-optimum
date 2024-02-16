@@ -22,7 +22,7 @@ def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
         browser = p.firefox.launch(headless=True)
         page = browser.new_page()
-        page.set_viewport_size({ 'width': 1920, 'height': 1080})
+        page.set_viewport_size({'width': 1920, 'height': 1080})
         stealth_sync(page)
 
         try:
@@ -38,20 +38,20 @@ def take_screenshot(username: str, password: str):
             page.wait_for_selector('#end-navigation')
             page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
             page.wait_for_load_state("networkidle")
-            
+
             # remove uneeded elements
             page.evaluate(
-            """
+                """
             () => {
             document.querySelector('footer.site-footer')?.remove();
             document.querySelector('section.checklist-container')?.remove()
             document.querySelector('nav.menu')?.remove()
             }
             """)
-            
+
             # set inner text of header
             page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
-        
+
         except Exception as e:
             page.locator("div.container").screenshot(path=f"{username}_{SCREENSHOT_PATH}", type="jpeg", quality=100)
             raise e
@@ -60,7 +60,7 @@ def take_screenshot(username: str, password: str):
 
 
 def send_email(screenshots: list):
-    text = f"PC POINTS FOR {', '.join([s.replace('_.jpg','') for s in screenshots])}"
+    text = f"PC POINTS FOR {', '.join([s.replace('_.jpg', '') for s in screenshots])}"
     message = MIMEMultipart("alternative")
     message["Subject"] = text
     message["From"] = SENDER_EMAIL
