@@ -32,9 +32,8 @@ def take_screenshot(username: str, password: str):
             page.fill("input#email", username)
             page.fill("input#password", password)
 
-            with page.expect_navigation(url="https://www.pcoptimum.ca**"):
-                page.click('button[type="submit"]')
-            
+            page.click('button[type="submit"]')
+
             page.wait_for_selector('#end-navigation')
             page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
             page.wait_for_load_state("networkidle")
