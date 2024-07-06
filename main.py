@@ -22,13 +22,15 @@ def take_screenshot(username: str, password: str):
     with sync_playwright() as p:
         browser = p.firefox.launch(headless=True)
         page = browser.new_page()
-        page.set_viewport_size({'width': 1920, 'height': 1080})
+        page.set_viewport_size({'width': 1366, 'height': 768})
         stealth_sync(page)
 
         try:
+            # Go to login page
+            page.goto("https://www.pcoptimum.ca", wait_until="networkidle")
+            page.locator("ul.menu-desktop__list:nth-child(3) > li:nth-child(1) > a:nth-child(1) > span:nth-child(1)").click()
 
-            # Login
-            page.goto("https://www.pcoptimum.ca/login")
+            # at login page fill user/pass
             page.fill("input#email", username)
             page.fill("input#password", password)
 
@@ -38,7 +40,7 @@ def take_screenshot(username: str, password: str):
             page.locator("ul.menu-desktop__list:nth-child(2) > li:nth-child(2) > a:nth-child(1)").click()
             page.wait_for_load_state("networkidle")
 
-            # remove uneeded elements
+            # remove unneeded elements
             page.evaluate(
                 """
             () => {
