@@ -40,6 +40,7 @@ venv.bak/
 
 # IDE files
 .vscode/
+.idea/
 
 # generated files
 *.jpg
